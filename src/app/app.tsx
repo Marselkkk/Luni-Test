@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from '../routeTree.gen'
-import { PostHogProvider } from '@shared/lib/posthog'
 import { TelegramProvider } from '@shared/lib/telegram-store'
 
 // Create a new router instance
@@ -21,9 +20,7 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TelegramProvider>
-        <PostHogProvider>
-          <RouterProvider router={router} />
-        </PostHogProvider>
+        <RouterProvider router={router} />
       </TelegramProvider>
     </QueryClientProvider>
   )

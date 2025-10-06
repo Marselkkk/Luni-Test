@@ -44,4 +44,7 @@ export default defineConfig({
       '@shared': '/src/shared',
     },
   },
+  css: {
+    postcss: './postcss.config.js',
+  },
 })
