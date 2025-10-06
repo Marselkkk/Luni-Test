@@ -27,7 +27,14 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #e4e4e4;
+  background: linear-gradient(
+    to bottom,
+    rgba(239, 167, 225, 0.4) 0%,
+    rgba(169, 240, 232, 0.5) 25%,
+    rgba(156, 190, 253, 0.6) 50%,
+    rgba(255, 255, 200, 0.4) 75%,
+    rgba(209, 243, 158, 0.5) 100%
+  );
 }
 
 #root {
@@ -38,4 +45,53 @@ body {
 .border-default {
   border-top: 4px solid;
   border-image-source: linear-gradient(45deg, #EFA7E1 9.87%, #A9F0E8 37.8%, #9CBEFD 66.57%, #D1F39E 94.5%);
+}
+
+@keyframes bounce-left {
+  0%, 100% {
+    transform: rotate(-5deg) translateX(0px);
+  }
+  25% {
+    transform: rotate(-8deg) translateX(-2px);
+  }
+  50% {
+    transform: rotate(-3deg) translateX(1px);
+  }
+  75% {
+    transform: rotate(-7deg) translateX(-1px);
+  }
+}
+
+@keyframes bounce-right {
+  0%, 100% {
+    transform: rotate(5deg) translateX(0px);
+  }
+  25% {
+    transform: rotate(8deg) translateX(2px);
+  }
+  50% {
+    transform: rotate(3deg) translateX(-1px);
+  }
+  75% {
+    transform: rotate(7deg) translateX(1px);
+  }
+}
+
+.animate-bounce-left {
+  animation: bounce-left 2s ease-in-out infinite;
+}
+
+.animate-bounce-right {
+  animation: bounce-right 2s ease-in-out infinite 0.5s;
+}
+
+.gradient-background {
+  background: linear-gradient(
+    to bottom,
+    rgba(239, 167, 225, 0.4) 0%,
+    rgba(169, 240, 232, 0.5) 25%,
+    rgba(156, 190, 253, 0.6) 50%,
+    rgba(255, 255, 200, 0.4) 75%,
+    rgba(209, 243, 158, 0.5) 100%
+  );
 }
