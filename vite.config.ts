@@ -36,12 +36,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src',
-      '@app': '/src/app',
-      '@pages': '/src/pages',
-      '@features': '/src/features',
-      '@entities': '/src/entities',
-      '@shared': '/src/shared',
+      '@': './src',
+      '@app': './src/app',
+      '@pages': './src/pages',
+      '@features': './src/features',
+      '@entities': './src/entities',
+      '@shared': './src/shared',
     },
   },
   css: {

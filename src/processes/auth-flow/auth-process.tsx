@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuthProcess = () => {
   const { state, setState } = useAuthStore()
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, _password: string) => {
     setState({ isLoading: true })
     
     try {

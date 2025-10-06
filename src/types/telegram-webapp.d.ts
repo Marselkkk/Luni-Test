@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 declare global {
   interface Window {
     Telegram?: {
@@ -130,6 +132,16 @@ declare global {
         close(): void
       }
     }
+  }
+  
+  interface ImportMetaEnv {
+    readonly VITE_PUBLIC_POSTHOG_KEY: string
+    readonly VITE_PUBLIC_POSTHOG_HOST?: string
+    readonly SKIP_ENV_VALIDATION?: string
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv
   }
 }
 

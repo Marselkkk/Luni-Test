@@ -1,4 +1,4 @@
-import { UserCard, Tag, ContactCard, InviteButton, TabBar, LuniBar, Button, InviteReceivedModal, InviteSuccessModal, InviteDeclinedModal } from '@shared/ui'
+import { UserCard, Tag, ContactCard, InviteButton, TabBar, LuniBar, InviteReceivedModal, InviteSuccessModal, InviteDeclinedModal } from '@shared/ui'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { useState } from 'react'
