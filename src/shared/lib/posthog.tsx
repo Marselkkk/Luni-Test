@@ -1,6 +1,6 @@
 import { PostHog } from 'posthog-js'
 import { useEffect } from 'react'
-import { env } from '@shared/config'
+import { env } from '../config'
 
 let posthog: PostHog | null = null
 

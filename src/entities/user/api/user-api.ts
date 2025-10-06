@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { httpClient } from '@shared/api'
+import { httpClient } from '../../../shared/api'
 import type { User } from '../model'
 
 export const useUser = (id: number) => {
