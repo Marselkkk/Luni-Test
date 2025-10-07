@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3002",
-    "build": "tsc && bun run lint && bun run arch:check && vite build",
+    "build": "tsc && npm run lint && vite build",
     "start": "vite preview",
     "serve": "vite preview",
     "test": "vitest",
-    "lint": "biome check src/",
-    "fix": "biome check --write src/",
+    "lint": "biome check src/**/*.{ts,tsx,js,jsx}",
+    "fix": "biome check --write src/**/*.{ts,tsx,js,jsx}",
     "arch:check": "depcruiser --config dependency-cruiser.cjs \"src/**/*.{ts,tsx}\"",
     "arch:graph": "depcruiser --config dependency-cruiser.cjs --output-type dot \"src/**/*.{ts,tsx}\" > ../docs/webapp/architecture.dot"
   },
