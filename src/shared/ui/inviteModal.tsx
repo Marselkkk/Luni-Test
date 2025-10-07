@@ -39,7 +39,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 }
             }
             
-            const inviteUrl = `https://t.me/test_task_luni_bot?startapp=invite&word=${encodeURIComponent(inviteWord.trim())}&from=${encodeURIComponent(senderName)}`
+            const inviteUrl = `https://t.me/test_task_luni_bot?start=startapp%3Dinvite%26word%3D${encodeURIComponent(inviteWord.trim())}%26from%3D${encodeURIComponent(senderName)}`
             const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`
             
             console.log('Generated invite URL:', inviteUrl)
