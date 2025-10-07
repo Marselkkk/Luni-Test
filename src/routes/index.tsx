@@ -9,19 +9,35 @@ export const Route = createFileRoute('/')({
         const [userName, setUserName] = useState('Загрузка...')
         
         useEffect(() => {
+            // Отладочная информация
+            console.log('=== TELEGRAM DEBUG ===')
+            console.log('window exists:', typeof window !== 'undefined')
+            console.log('window.Telegram exists:', !!window.Telegram)
+            console.log('window.Telegram.WebApp exists:', !!window.Telegram?.WebApp)
+            
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-                const user = window.Telegram!.WebApp.initDataUnsafe?.user
+                const webApp = window.Telegram!.WebApp
+                console.log('WebApp:', webApp)
+                console.log('initDataUnsafe:', webApp.initDataUnsafe)
+                
+                const user = webApp.initDataUnsafe?.user
+                console.log('User:', user)
+                
                 if (user) {
                     const name = user.first_name && user.last_name 
                         ? `${user.first_name} ${user.last_name}`
                         : user.first_name || `@${user.username}` || 'Пользователь'
+                    console.log('Generated name:', name)
                     setUserName(name)
                 } else {
+                    console.log('No user found, setting to "Пользователь"')
                     setUserName('Пользователь')
                 }
             } else {
+                console.log('Not in Telegram, setting to "Тестовый Пользователь"')
                 setUserName('Тестовый Пользователь')
             }
+            console.log('=== END DEBUG ===')
         }, [])
         
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
@@ -53,6 +69,13 @@ export const Route = createFileRoute('/')({
                     <div className="px-4 flex items-center justify-between">
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
                         <UserCard name={userName} />
+                    </div>
+                    
+                    {/* Отладочная информация */}
+                    <div className="px-4 p-2 bg-yellow-100 rounded text-xs">
+                        <div>Имя: {userName}</div>
+                        <div>В Telegram: {typeof window !== 'undefined' && window.Telegram?.WebApp ? 'Да' : 'Нет'}</div>
+                        <div>Пользователь: {typeof window !== 'undefined' && window.Telegram?.WebApp?.initDataUnsafe?.user ? 'Есть' : 'Нет'}</div>
                     </div>
 
                     <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
