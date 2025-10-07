@@ -39,13 +39,10 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 }
             }
             
-            const inviteUrl = `https://t.me/test_task_luni_bot?start=startapp%3Dinvite%26word%3D${encodeURIComponent(inviteWord.trim())}%26from%3D${encodeURIComponent(senderName)}`
-            const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`
+            const payload = `startapp=invite&word=${encodeURIComponent(inviteWord.trim())}&from=${encodeURIComponent(senderName)}`
+            const inviteUrl = `https://t.me/test_task_luni_bot?startapp=${encodeURIComponent(payload)}`
             
-            console.log('Generated invite URL:', inviteUrl)
-            console.log('Generated message:', message)
-            console.log('Sender name:', senderName)
-            console.log('Invite word:', inviteWord.trim())
+            const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`
             
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(message)}`)
