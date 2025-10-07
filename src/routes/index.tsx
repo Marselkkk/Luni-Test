@@ -7,47 +7,79 @@ export const Route = createFileRoute('/')({
     component: () => {
         const [activeFilter, setActiveFilter] = useState<string>('Все')
         const [userName, setUserName] = useState('Загрузка...')
+        const [userAvatar, setUserAvatar] = useState('/images/stub.png')
+        const [contacts, setContacts] = useState<any[]>([])
+        const [contactsLoaded, setContactsLoaded] = useState(false)
         
-        useEffect(() => {
-            // Отладочная информация
-            console.log('=== TELEGRAM DEBUG ===')
-            console.log('window exists:', typeof window !== 'undefined')
-            console.log('window.Telegram exists:', !!window.Telegram)
-            console.log('window.Telegram.WebApp exists:', !!window.Telegram?.WebApp)
-            
+        const requestContacts = () => {
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 const webApp = window.Telegram!.WebApp
-                console.log('WebApp:', webApp)
-                console.log('initDataUnsafe:', webApp.initDataUnsafe)
-                
-                const user = webApp.initDataUnsafe?.user
-                console.log('User:', user)
-                
+                webApp.requestContact((granted: boolean) => {
+                    if (granted) {
+                        loadContactsFromTelegram()
+                    } else {
+                        setContacts(getDefaultContacts())
+                        setContactsLoaded(true)
+                    }
+                })
+            } else {
+                setContacts(getDefaultContacts())
+                setContactsLoaded(true)
+            }
+        }
+
+        const loadContactsFromTelegram = () => {
+            if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                setContacts(getDefaultContacts())
+                setContactsLoaded(true)
+            }
+        }
+
+        const getDefaultContacts = () => [
+            { 
+                id: 1, 
+                name: 'Анна Петрова', 
+                isOnline: true, 
+                notifications: true,
+                avatar: '/images/stub.png',
+            },
+            { 
+                id: 2, 
+                name: 'Максим Сидоров', 
+                isOnline: false, 
+                notifications: true,
+                avatar: '/images/stub.png',
+            }
+        ]
+
+        useEffect(() => {
+            if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                const user = window.Telegram!.WebApp.initDataUnsafe?.user
                 if (user) {
                     const name = user.first_name && user.last_name 
                         ? `${user.first_name} ${user.last_name}`
                         : user.first_name || `@${user.username}` || 'Пользователь'
-                    console.log('Generated name:', name)
                     setUserName(name)
+                    
+                    if (user.photo_url) {
+                        setUserAvatar(user.photo_url)
+                    }
                 } else {
-                    console.log('No user found, setting to "Пользователь"')
                     setUserName('Пользователь')
                 }
+                
+                requestContacts()
             } else {
-                console.log('Not in Telegram, setting to "Тестовый Пользователь"')
                 setUserName('Тестовый Пользователь')
+                setUserAvatar('/images/stub.png')
+                setContacts(getDefaultContacts())
+                setContactsLoaded(true)
             }
-            console.log('=== END DEBUG ===')
         }, [])
         
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
         const [inviteSuccessOpen, setInviteSuccessOpen] = useState(false)
         const [inviteDeclinedOpen, setInviteDeclinedOpen] = useState(false)
-        
-        const contacts = [
-            { id: 1, name: 'Максим Федотов', isOnline: false, notifications: true },
-            { id: 2, name: 'Morgen', isOnline: true, notifications: false },
-        ]
         
         const filteredContacts = contacts.filter(contact => {
             switch (activeFilter) {
@@ -68,14 +100,7 @@ export const Route = createFileRoute('/')({
                 <div className="flex flex-col gap-[18px]">
                     <div className="px-4 flex items-center justify-between">
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
-                        <UserCard name={userName} />
-                    </div>
-                    
-                    {/* Отладочная информация */}
-                    <div className="px-4 p-2 bg-yellow-100 rounded text-xs">
-                        <div>Имя: {userName}</div>
-                        <div>В Telegram: {typeof window !== 'undefined' && window.Telegram?.WebApp ? 'Да' : 'Нет'}</div>
-                        <div>Пользователь: {typeof window !== 'undefined' && window.Telegram?.WebApp?.initDataUnsafe?.user ? 'Есть' : 'Нет'}</div>
+                        <UserCard name={userName} avatar={userAvatar} />
                     </div>
 
                     <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
@@ -119,14 +144,27 @@ export const Route = createFileRoute('/')({
                         </div>
 
                         <div className='grid grid-cols-4 gap-3 p-4'>
-                            {filteredContacts.map(contact => (
-                                <ContactCard 
-                                    key={contact.id}
-                                    name={contact.name} 
-                                    isOnline={contact.isOnline}
-                                    notifications={contact.notifications}
-                                />
-                            ))}
+                            {contactsLoaded ? (
+                                filteredContacts.map(contact => (
+                                    <ContactCard 
+                                        key={contact.id}
+                                        name={contact.name} 
+                                        avatar={contact.avatar}
+                                        isOnline={contact.isOnline}
+                                        notifications={contact.notifications}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-4 text-center p-4">
+                                    <div className="text-gray-500 mb-2">Загрузка контактов...</div>
+                                    <button 
+                                        onClick={requestContacts}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                    >
+                                        Запросить контакты
+                                    </button>
+                                </div>
+                            )}
 
                             <div className='flex flex-col gap-1 items-center'>
                                 <div className='h-20 aspect-square flex items-center justify-center px-[19.5px] py-[18.13px] bg-[#77809B] rounded-[22px]'>
