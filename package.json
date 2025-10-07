@@ -9,8 +9,8 @@
     "start": "vite preview",
     "serve": "vite preview",
     "test": "vitest",
-    "lint": "biome check src/**/*.{ts,tsx,js,jsx}",
-    "fix": "biome check --write src/**/*.{ts,tsx,js,jsx}",
+    "lint": "biome check .",
+    "fix": "biome check --write .",
     "arch:check": "depcruiser --config dependency-cruiser.cjs \"src/**/*.{ts,tsx}\"",
     "arch:graph": "depcruiser --config dependency-cruiser.cjs --output-type dot \"src/**/*.{ts,tsx}\" > ../docs/webapp/architecture.dot"
   },
