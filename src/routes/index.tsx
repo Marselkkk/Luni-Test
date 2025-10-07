@@ -152,13 +152,13 @@ export const Route = createFileRoute('/')({
         
         return (
             <>
-                <div className="flex flex-col gap-[18px]">
+                <div className="flex flex-col gap-[18px] pt-[133px]">
                     <div className="px-4 flex items-center justify-between">
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
                         <UserCard name={userName} avatar={userAvatar} />
                     </div>
 
-                    <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
+                    <div className="bg-white" style={{ height: 'calc(100dvh - 203px)' }}>
                         <div className="flex justify-between items-center px-4 py-1">
                             <div className="flex items-center gap-2">
                                 <div className='h-6 aspect-square'>
