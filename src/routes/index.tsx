@@ -49,40 +49,60 @@ export const Route = createFileRoute('/')({
                     setUserName('Пользователь')
                 }
                 
-                // В Telegram WebApp параметры передаются через start_param, а не через URL
+                // Проверяем параметры из URL (для /app?startapp=...)
+                const urlParams = new URLSearchParams(window.location.search)
+                const startappParam = urlParams.get('startapp')
+                console.log('URL startapp param:', startappParam)
+                
+                // Также проверяем start_param из Telegram WebApp
                 const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param
                 console.log('Telegram start_param:', startParam)
                 
-                if (startParam) {
+                let inviteWord = null
+                let fromUser = null
+                let isInvite = false
+                
+                // Сначала проверяем URL параметры
+                if (startappParam) {
                     try {
-                        // Декодируем start_param и парсим как URLSearchParams
+                        const decodedStartapp = decodeURIComponent(startappParam)
+                        const startappParams = new URLSearchParams(decodedStartapp)
+                        isInvite = startappParams.get('startapp') === 'invite' || decodedStartapp.startsWith('invite')
+                        inviteWord = startappParams.get('word')
+                        fromUser = startappParams.get('from')
+                        
+                        console.log('URL startapp decoded:', decodedStartapp)
+                        console.log('URL startapp parsed:', { isInvite, inviteWord, fromUser })
+                    } catch (e) {
+                        console.log('Error parsing startapp param:', e)
+                    }
+                }
+                
+                // Если не нашли в URL, проверяем start_param
+                if (!isInvite && startParam) {
+                    try {
                         const decodedStartParam = decodeURIComponent(startParam)
                         const startParams = new URLSearchParams(decodedStartParam)
-                        const isInvite = startParams.get('startapp') === 'invite'
-                        const telegramInviteWord = startParams.get('word')
-                        const telegramFromUser = startParams.get('from')
+                        isInvite = startParams.get('startapp') === 'invite' || decodedStartParam.startsWith('invite')
+                        inviteWord = startParams.get('word')
+                        fromUser = startParams.get('from')
                         
-                        console.log('Raw start_param:', startParam)
-                        console.log('Decoded start_param:', decodedStartParam)
-                        console.log('Parsed start_param:', { isInvite, telegramInviteWord, telegramFromUser })
-                        
-                        if (isInvite && telegramInviteWord && telegramFromUser) {
-                            console.log('✅ Opening invite modal from Telegram start_param:', { telegramInviteWord, telegramFromUser })
-                            setDebugInfo(`✅ Telegram start_param: ${telegramInviteWord} от ${telegramFromUser}`)
-                            setInviteReceivedOpen(true)
-                            sessionStorage.setItem('inviteWord', telegramInviteWord)
-                            sessionStorage.setItem('fromUser', telegramFromUser)
-                        } else {
-                            console.log('❌ Invite conditions not met in start_param:', { isInvite, telegramInviteWord, telegramFromUser })
-                            setDebugInfo(`❌ Нет приглашения в start_param. Декодированные параметры: ${decodedStartParam}`)
-                        }
+                        console.log('start_param decoded:', decodedStartParam)
+                        console.log('start_param parsed:', { isInvite, inviteWord, fromUser })
                     } catch (e) {
-                        console.log('❌ Error parsing start_param:', e)
-                        setDebugInfo(`❌ Ошибка парсинга start_param: ${e}`)
+                        console.log('Error parsing start_param:', e)
                     }
+                }
+                
+                if (isInvite && inviteWord && fromUser) {
+                    console.log('✅ Opening invite modal:', { inviteWord, fromUser })
+                    setDebugInfo(`✅ Приглашение: ${inviteWord} от ${fromUser}`)
+                    setInviteReceivedOpen(true)
+                    sessionStorage.setItem('inviteWord', inviteWord)
+                    sessionStorage.setItem('fromUser', fromUser)
                 } else {
-                    console.log('❌ No start_param found')
-                    setDebugInfo(`❌ Нет start_param. URL: ${window.location.search}`)
+                    console.log('❌ No invite found')
+                    setDebugInfo(`❌ Нет приглашения. URL: ${window.location.search}, start_param: ${startParam}`)
                 }
             } else {
                 console.log('❌ Telegram WebApp not available')
