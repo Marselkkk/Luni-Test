@@ -10,7 +10,7 @@ export interface InviteModalProps {
 const InviteModal: React.FC<InviteModalProps> = ({ 
     isOpen, 
     onClose, 
-    invitesCount 
+    invitesCount
 }) => {
     const [inviteWord, setInviteWord] = useState('')
 
@@ -27,6 +27,13 @@ const InviteModal: React.FC<InviteModalProps> = ({
     }
 
     const handleSelectContact = () => {
+        if (inviteWord.trim()) {
+            const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: https://t.me/luni_test_bot`
+            
+            if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                window.Telegram.WebApp.openLink(`https://t.me/share/url?url=${encodeURIComponent(message)}`)
+            }
+        }
         onClose()
     }
 
