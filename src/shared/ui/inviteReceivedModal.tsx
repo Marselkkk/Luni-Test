@@ -20,6 +20,33 @@ const InviteReceivedModal: React.FC<InviteReceivedModalProps> = ({
 }) => {
     if (!isOpen) return null
 
+    const reverseTransliterate = (str: string) => {
+        const map: { [key: string]: string } = {
+            'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г', 'd': 'д', 'e': 'е', 'yo': 'ё', 'zh': 'ж',
+            'z': 'з', 'i': 'и', 'y': 'й', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о',
+            'p': 'п', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у', 'f': 'ф', 'h': 'х', 'ts': 'ц',
+            'ch': 'ч', 'sh': 'ш', 'sch': 'щ', 'yu': 'ю', 'ya': 'я'
+        }
+        
+        let result = str.toLowerCase()
+        
+        for (const [lat, cyr] of Object.entries(map)) {
+            if (lat.length > 1) {
+                result = result.replace(new RegExp(lat, 'g'), cyr)
+            }
+        }
+        
+        for (const [lat, cyr] of Object.entries(map)) {
+            if (lat.length === 1) {
+                result = result.replace(new RegExp(lat, 'g'), cyr)
+            }
+        }
+        
+        return result
+    }
+
+    const originalWord = reverseTransliterate(inviteWord)
+
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
             onClose()
@@ -53,8 +80,8 @@ const InviteReceivedModal: React.FC<InviteReceivedModalProps> = ({
                                 backgroundPosition: 'center'
                             }}
                         ></div>
-                        <div className="relative text-[28px] leading-[22px] font-extrabold text-[#12B2BE] tracking-[0.1em]">
-                            {inviteWord}
+                        <div className="relative text-[28px] leading-[22px] font-extrabold text-[#12B2BE] tracking-[0.1em] uppercase">
+                            {originalWord}
                         </div>
                     </div>
                 </div>

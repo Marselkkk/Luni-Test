@@ -28,7 +28,6 @@ const InviteModal: React.FC<InviteModalProps> = ({
 
     const handleSelectContact = () => {
         if (inviteWord.trim()) {
-            // Получаем имя текущего пользователя из Telegram
             let senderName = 'Пользователь'
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 const user = window.Telegram.WebApp.initDataUnsafe?.user
@@ -39,7 +38,6 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 }
             }
             
-            // Простейший формат для Telegram WebApp - транслитерация кириллицы
             const transliterate = (str: string) => {
                 const map: { [key: string]: string } = {
                     'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',

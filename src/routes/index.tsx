@@ -27,10 +27,6 @@ export const Route = createFileRoute('/')({
         ]
 
         useEffect(() => {
-            console.log('=== MOBILE DEBUG START ===')
-            console.log('Window location:', window.location.href)
-            console.log('User agent:', navigator.userAgent)
-            console.log('Telegram WebApp available:', !!window.Telegram?.WebApp)
             
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 console.log('Full initDataUnsafe:', window.Telegram.WebApp.initDataUnsafe)
@@ -49,36 +45,16 @@ export const Route = createFileRoute('/')({
                     setUserName('Пользователь')
                 }
                 
-                // Детальная отладка всех параметров
-                console.log('=== DETAILED DEBUG ===')
-                console.log('Full URL:', window.location.href)
-                console.log('URL search:', window.location.search)
-                console.log('URL hash:', window.location.hash)
-                
                 const urlParams = new URLSearchParams(window.location.search)
-                console.log('All URL params:', Object.fromEntries(urlParams.entries()))
                 
-                // Согласно документации, параметры передаются через start_param
                 const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param
-                console.log('Telegram start_param:', startParam)
                 
-                // Также проверяем tgWebAppStartParam (GET параметр)
                 const tgWebAppStartParam = urlParams.get('tgWebAppStartParam')
-                console.log('tgWebAppStartParam:', tgWebAppStartParam)
-                
-                // Проверяем все возможные источники параметров
-                console.log('=== ALL PARAMETER SOURCES ===')
-                console.log('window.location.search:', window.location.search)
-                console.log('window.location.href:', window.location.href)
-                console.log('initDataUnsafe:', window.Telegram.WebApp.initDataUnsafe)
-                console.log('initData:', window.Telegram.WebApp.initData)
                 
                 let inviteWord = null
                 let fromUser = null
                 let isInvite = false
-                let debugMessage = ''
                 
-                // Проверяем все возможные источники параметров
                 const paramSources = [
                     { name: 'start_param', value: startParam },
                     { name: 'tgWebAppStartParam', value: tgWebAppStartParam },
@@ -86,13 +62,10 @@ export const Route = createFileRoute('/')({
                 ]
                 
                 let paramToCheck = null
-                let sourceName = ''
                 
                 for (const source of paramSources) {
                     if (source.value) {
                         paramToCheck = source.value
-                        sourceName = source.name
-                        console.log(`Found param in ${source.name}:`, source.value)
                         break
                     }
                 }
@@ -100,59 +73,38 @@ export const Route = createFileRoute('/')({
                 if (paramToCheck) {
                     try {
                         const decodedParam = decodeURIComponent(paramToCheck)
-                        console.log(`Decoded param from ${sourceName}:`, decodedParam)
                         
-                        // Парсинг нового формата: invitewordname
                         if (decodedParam.startsWith('invite')) {
                             isInvite = true
                             
-                            // Извлекаем данные из формата: invitewordname
-                            const withoutInvite = decodedParam.substring(6) // Убираем "invite"
+                            const withoutInvite = decodedParam.substring(6)
                             
-                            // Простое извлечение - берем первые символы как слово, остальное как имя
-                            // Это не идеально, но должно работать для тестирования
                             if (withoutInvite.length > 0) {
-                                // Берем первые 3-5 символов как слово, остальное как имя
                                 const wordLength = Math.min(5, Math.max(3, withoutInvite.length / 2))
                                 inviteWord = withoutInvite.substring(0, wordLength)
                                 fromUser = withoutInvite.substring(wordLength) || 'User'
                             }
                         }
                         
-                        debugMessage = `${sourceName}: ${decodedParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
-                        console.log('Param parsing result:', { isInvite, inviteWord, fromUser })
                     } catch (e) {
-                        console.log('Error parsing param:', e)
-                        debugMessage = `Ошибка парсинга ${sourceName}: ${e}`
                     }
-                } else {
-                    debugMessage = 'Нет параметров ни в одном источнике'
-                    console.log('No parameters found in any source')
                 }
                 
                 if (isInvite && inviteWord && fromUser) {
-                    console.log('✅ Opening invite modal:', { inviteWord, fromUser })
-                    setDebugInfo(`✅ Приглашение: ${inviteWord} от ${fromUser}`)
                     setInviteReceivedOpen(true)
                     sessionStorage.setItem('inviteWord', inviteWord)
                     sessionStorage.setItem('fromUser', fromUser)
-                } else {
-                    console.log('❌ No invite found')
-                    setDebugInfo(`❌ Нет приглашения. ${debugMessage}`)
                 }
             } else {
-                console.log('❌ Telegram WebApp not available')
                 setUserName('Тестовый Пользователь')
                 setUserAvatar('/images/stub.png')
                 
-                // Для тестирования в браузере - проверяем URL параметры
                 const urlParams = new URLSearchParams(window.location.search)
                 const testStartapp = urlParams.get('startapp')
                 
                 if (testStartapp) {
                     try {
                         const decodedStartapp = decodeURIComponent(testStartapp)
-                        console.log('Browser test - decoded startapp:', decodedStartapp)
                         
                         if (decodedStartapp.includes('invite')) {
                             const wordMatch = decodedStartapp.match(/word=([^&]+)/)
@@ -162,27 +114,20 @@ export const Route = createFileRoute('/')({
                                 const inviteWord = decodeURIComponent(wordMatch[1])
                                 const fromUser = decodeURIComponent(fromMatch[1])
                                 
-                                console.log('Browser test - opening modal:', { inviteWord, fromUser })
-                                setDebugInfo(`✅ Браузер тест: ${inviteWord} от ${fromUser}`)
                                 setInviteReceivedOpen(true)
                                 sessionStorage.setItem('inviteWord', inviteWord)
                                 sessionStorage.setItem('fromUser', fromUser)
                             }
                         }
                     } catch (e) {
-                        console.log('Browser test error:', e)
-                        setDebugInfo(`❌ Ошибка браузер теста: ${e}`)
                     }
                 }
             }
-            
-            console.log('=== MOBILE DEBUG END ===')
         }, [])
         
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
         const [inviteSuccessOpen, setInviteSuccessOpen] = useState(false)
         const [inviteDeclinedOpen, setInviteDeclinedOpen] = useState(false)
-        const [debugInfo, setDebugInfo] = useState('')
         
         const getInviteData = () => {
             const inviteWord = sessionStorage.getItem('inviteWord') || 'КРАСАВЕЛЛО'
@@ -214,13 +159,6 @@ export const Route = createFileRoute('/')({
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
                         <UserCard name={userName} avatar={userAvatar} />
                     </div>
-                    
-                    {/* Отладочная информация для мобильного тестирования */}
-                    {debugInfo && (
-                        <div className="mx-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
-                            <p className="text-sm text-yellow-800 font-mono">{debugInfo}</p>
-                        </div>
-                    )}
 
                     <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
                         <div className="flex justify-between items-center px-4 py-1">
