@@ -31,7 +31,9 @@ const InviteModal: React.FC<InviteModalProps> = ({
             const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: https://t.me/luni_test_bot`
             
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-                window.Telegram.WebApp.openLink(`https://t.me/share/url?url=${encodeURIComponent(message)}`)
+                window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(message)}`)
+            } else {
+                navigator.clipboard.writeText(message)
             }
         }
         onClose()
