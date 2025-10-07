@@ -79,16 +79,16 @@ export const Route = createFileRoute('/')({
                         const decodedParam = decodeURIComponent(paramToCheck)
                         console.log('Decoded param:', decodedParam)
                         
-                        // Простой парсинг строки
-                        if (decodedParam.includes('invite')) {
+                        // Парсинг нового формата: invite_word_from
+                        if (decodedParam.startsWith('invite_')) {
                             isInvite = true
                             
-                            // Извлекаем word и from из строки
-                            const wordMatch = decodedParam.match(/word=([^&]+)/)
-                            const fromMatch = decodedParam.match(/from=([^&]+)/)
-                            
-                            if (wordMatch) inviteWord = decodeURIComponent(wordMatch[1])
-                            if (fromMatch) fromUser = decodeURIComponent(fromMatch[1])
+                            // Разделяем по подчеркиваниям: invite_word_from
+                            const parts = decodedParam.split('_')
+                            if (parts.length >= 3) {
+                                inviteWord = decodeURIComponent(parts[1])
+                                fromUser = decodeURIComponent(parts.slice(2).join('_')) // На случай, если в имени есть подчеркивания
+                            }
                         }
                         
                         debugMessage = `Param: ${decodedParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
