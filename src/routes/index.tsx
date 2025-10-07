@@ -41,6 +41,17 @@ export const Route = createFileRoute('/')({
                 } else {
                     setUserName('Пользователь')
                 }
+                
+                const urlParams = new URLSearchParams(window.location.search)
+                const isInvite = urlParams.get('startapp') === 'invite'
+                const inviteWord = urlParams.get('word')
+                const fromUser = urlParams.get('from')
+                
+                if (isInvite && inviteWord && fromUser) {
+                    setInviteReceivedOpen(true)
+                    sessionStorage.setItem('inviteWord', inviteWord)
+                    sessionStorage.setItem('fromUser', fromUser)
+                }
             } else {
                 setUserName('Тестовый Пользователь')
                 setUserAvatar('/images/stub.png')
@@ -50,6 +61,14 @@ export const Route = createFileRoute('/')({
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
         const [inviteSuccessOpen, setInviteSuccessOpen] = useState(false)
         const [inviteDeclinedOpen, setInviteDeclinedOpen] = useState(false)
+        
+        const getInviteData = () => {
+            const inviteWord = sessionStorage.getItem('inviteWord') || 'КРАСАВЕЛЛО'
+            const fromUser = sessionStorage.getItem('fromUser') || 'Леша Алексеев'
+            return { inviteWord, fromUser }
+        }
+        
+        const { inviteWord: currentInviteWord, fromUser: currentFromUser } = getInviteData()
         
         
         const filteredContacts = contacts.filter(contact => {
@@ -151,8 +170,8 @@ export const Route = createFileRoute('/')({
                 <InviteReceivedModal
                     isOpen={inviteReceivedOpen}
                     onClose={() => setInviteReceivedOpen(false)}
-                    inviterName="Леша Алексеев"
-                    inviteWord="КРАСАВЕЛЛО"
+                    inviterName={currentFromUser}
+                    inviteWord={currentInviteWord}
                     onDecline={() => setInviteReceivedOpen(false)}
                     onAccept={() => setInviteReceivedOpen(false)}
                 />
