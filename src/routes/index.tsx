@@ -49,13 +49,11 @@ export const Route = createFileRoute('/')({
                     setUserName('Пользователь')
                 }
                 
-                // В Telegram WebApp параметры передаются через start_param, а не через URL
                 const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param
                 console.log('Telegram start_param:', startParam)
                 
                 if (startParam) {
                     try {
-                        // Парсим start_param как URLSearchParams
                         const startParams = new URLSearchParams(startParam)
                         const isInvite = startParams.get('startapp') === 'invite'
                         const telegramInviteWord = startParams.get('word')
