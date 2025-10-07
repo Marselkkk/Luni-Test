@@ -58,66 +58,44 @@ export const Route = createFileRoute('/')({
                 const urlParams = new URLSearchParams(window.location.search)
                 console.log('All URL params:', Object.fromEntries(urlParams.entries()))
                 
-                const startappParam = urlParams.get('startapp')
-                console.log('startapp param:', startappParam)
-                
+                // Согласно документации, параметры передаются через start_param
                 const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param
                 console.log('Telegram start_param:', startParam)
+                
+                // Также проверяем tgWebAppStartParam (GET параметр)
+                const tgWebAppStartParam = urlParams.get('tgWebAppStartParam')
+                console.log('tgWebAppStartParam:', tgWebAppStartParam)
                 
                 let inviteWord = null
                 let fromUser = null
                 let isInvite = false
                 let debugMessage = ''
                 
-                // Проверяем URL параметры
-                if (startappParam) {
-                    try {
-                        const decodedStartapp = decodeURIComponent(startappParam)
-                        console.log('Decoded startapp:', decodedStartapp)
-                        
-                        // Простой парсинг строки
-                        if (decodedStartapp.includes('invite')) {
-                            isInvite = true
-                            
-                            // Извлекаем word и from из строки
-                            const wordMatch = decodedStartapp.match(/word=([^&]+)/)
-                            const fromMatch = decodedStartapp.match(/from=([^&]+)/)
-                            
-                            if (wordMatch) inviteWord = decodeURIComponent(wordMatch[1])
-                            if (fromMatch) fromUser = decodeURIComponent(fromMatch[1])
-                        }
-                        
-                        debugMessage = `URL: ${decodedStartapp} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
-                        console.log('URL parsing result:', { isInvite, inviteWord, fromUser })
-                    } catch (e) {
-                        console.log('Error parsing startapp param:', e)
-                        debugMessage = `Ошибка парсинга startapp: ${e}`
-                    }
-                }
+                // Согласно документации, проверяем start_param и tgWebAppStartParam
+                const paramToCheck = startParam || tgWebAppStartParam
                 
-                // Если не нашли в URL, проверяем start_param
-                if (!isInvite && startParam) {
+                if (paramToCheck) {
                     try {
-                        const decodedStartParam = decodeURIComponent(startParam)
-                        console.log('Decoded start_param:', decodedStartParam)
+                        const decodedParam = decodeURIComponent(paramToCheck)
+                        console.log('Decoded param:', decodedParam)
                         
                         // Простой парсинг строки
-                        if (decodedStartParam.includes('invite')) {
+                        if (decodedParam.includes('invite')) {
                             isInvite = true
                             
                             // Извлекаем word и from из строки
-                            const wordMatch = decodedStartParam.match(/word=([^&]+)/)
-                            const fromMatch = decodedStartParam.match(/from=([^&]+)/)
+                            const wordMatch = decodedParam.match(/word=([^&]+)/)
+                            const fromMatch = decodedParam.match(/from=([^&]+)/)
                             
                             if (wordMatch) inviteWord = decodeURIComponent(wordMatch[1])
                             if (fromMatch) fromUser = decodeURIComponent(fromMatch[1])
                         }
                         
-                        debugMessage = `start_param: ${decodedStartParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
-                        console.log('start_param parsing result:', { isInvite, inviteWord, fromUser })
+                        debugMessage = `Param: ${decodedParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
+                        console.log('Param parsing result:', { isInvite, inviteWord, fromUser })
                     } catch (e) {
-                        console.log('Error parsing start_param:', e)
-                        debugMessage = `Ошибка парсинга start_param: ${e}`
+                        console.log('Error parsing param:', e)
+                        debugMessage = `Ошибка парсинга: ${e}`
                     }
                 }
                 
@@ -135,6 +113,36 @@ export const Route = createFileRoute('/')({
                 console.log('❌ Telegram WebApp not available')
                 setUserName('Тестовый Пользователь')
                 setUserAvatar('/images/stub.png')
+                
+                // Для тестирования в браузере - проверяем URL параметры
+                const urlParams = new URLSearchParams(window.location.search)
+                const testStartapp = urlParams.get('startapp')
+                
+                if (testStartapp) {
+                    try {
+                        const decodedStartapp = decodeURIComponent(testStartapp)
+                        console.log('Browser test - decoded startapp:', decodedStartapp)
+                        
+                        if (decodedStartapp.includes('invite')) {
+                            const wordMatch = decodedStartapp.match(/word=([^&]+)/)
+                            const fromMatch = decodedStartapp.match(/from=([^&]+)/)
+                            
+                            if (wordMatch && fromMatch) {
+                                const inviteWord = decodeURIComponent(wordMatch[1])
+                                const fromUser = decodeURIComponent(fromMatch[1])
+                                
+                                console.log('Browser test - opening modal:', { inviteWord, fromUser })
+                                setDebugInfo(`✅ Браузер тест: ${inviteWord} от ${fromUser}`)
+                                setInviteReceivedOpen(true)
+                                sessionStorage.setItem('inviteWord', inviteWord)
+                                sessionStorage.setItem('fromUser', fromUser)
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Browser test error:', e)
+                        setDebugInfo(`❌ Ошибка браузер теста: ${e}`)
+                    }
+                }
             }
             
             console.log('=== MOBILE DEBUG END ===')
