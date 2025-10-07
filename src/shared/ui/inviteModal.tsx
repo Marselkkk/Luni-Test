@@ -28,7 +28,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
 
     const handleSelectContact = () => {
         if (inviteWord.trim()) {
-            let senderName = 'Пользователь'
+            let senderName = 'Пользователь2'
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 const user = window.Telegram.WebApp.initDataUnsafe?.user
                 if (user) {
