@@ -35,6 +35,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@t3-oss/env-core": "^0.10.1",
+    "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.51.1",
     "@tanstack/react-router": "^1.45.0",
     "@tanstack/router-devtools": "^1.45.0",

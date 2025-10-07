@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react'
+import React, { useState, createContext, useContext, useEffect } from 'react'
 
 interface TelegramState {
   webApp: any | null
@@ -35,6 +35,39 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
   const updateState = (newState: Partial<TelegramState>) => {
     setState(prev => ({ ...prev, ...newState }))
   }
+
+  useEffect(() => {
+    // Инициализация Telegram Web App
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      const webApp = window.Telegram.WebApp
+      
+      // Инициализируем Web App
+      webApp.ready()
+      webApp.expand()
+      
+      // Получаем информацию о пользователе
+      const user = webApp.initDataUnsafe?.user
+      
+      updateState({
+        webApp,
+        isReady: true,
+        user: user || null,
+      })
+    } else {
+      // Для разработки - создаем тестового пользователя
+      updateState({
+        webApp: null,
+        isReady: true,
+        user: {
+          id: 123456789,
+          first_name: 'Тестовый',
+          last_name: 'Пользователь',
+          username: 'test_user',
+          language_code: 'ru',
+        },
+      })
+    }
+  }, [])
 
   return (
     <TelegramContext.Provider value={{ state, setState: updateState }}>

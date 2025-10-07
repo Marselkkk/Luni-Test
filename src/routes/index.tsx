@@ -1,11 +1,13 @@
 import { UserCard, Tag, ContactCard, InviteButton, TabBar, LuniBar, InviteReceivedModal, InviteSuccessModal, InviteDeclinedModal } from '../shared/ui'
 import { createFileRoute } from '@tanstack/react-router'
+import { useTelegramUser } from '../shared/lib'
 
 import { useState } from 'react'
 
 export const Route = createFileRoute('/')({
     component: () => {
         const [activeFilter, setActiveFilter] = useState<string>('Все')
+        const { getUserDisplayName, isReady } = useTelegramUser()
         
         // Состояния для модалок
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
@@ -36,7 +38,7 @@ export const Route = createFileRoute('/')({
                 <div className="flex flex-col gap-[18px]">
                     <div className="px-4 flex items-center justify-between">
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
-                        <UserCard name="Андрей" />
+                        <UserCard name={isReady ? getUserDisplayName() : 'Загрузка...'} />
                     </div>
 
                     <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
