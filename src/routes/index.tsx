@@ -75,14 +75,17 @@ export const Route = createFileRoute('/')({
                         const decodedStartapp = decodeURIComponent(startappParam)
                         console.log('Decoded startapp:', decodedStartapp)
                         
-                        // Пробуем разные способы парсинга
-                        const startappParams = new URLSearchParams(decodedStartapp)
-                        console.log('URLSearchParams result:', Object.fromEntries(startappParams.entries()))
-                        
-                        // Проверяем, начинается ли с 'invite'
-                        isInvite = decodedStartapp.startsWith('invite')
-                        inviteWord = startappParams.get('word')
-                        fromUser = startappParams.get('from')
+                        // Простой парсинг строки
+                        if (decodedStartapp.includes('invite')) {
+                            isInvite = true
+                            
+                            // Извлекаем word и from из строки
+                            const wordMatch = decodedStartapp.match(/word=([^&]+)/)
+                            const fromMatch = decodedStartapp.match(/from=([^&]+)/)
+                            
+                            if (wordMatch) inviteWord = decodeURIComponent(wordMatch[1])
+                            if (fromMatch) fromUser = decodeURIComponent(fromMatch[1])
+                        }
                         
                         debugMessage = `URL: ${decodedStartapp} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
                         console.log('URL parsing result:', { isInvite, inviteWord, fromUser })
@@ -98,12 +101,17 @@ export const Route = createFileRoute('/')({
                         const decodedStartParam = decodeURIComponent(startParam)
                         console.log('Decoded start_param:', decodedStartParam)
                         
-                        const startParams = new URLSearchParams(decodedStartParam)
-                        console.log('start_param URLSearchParams:', Object.fromEntries(startParams.entries()))
-                        
-                        isInvite = decodedStartParam.startsWith('invite')
-                        inviteWord = startParams.get('word')
-                        fromUser = startParams.get('from')
+                        // Простой парсинг строки
+                        if (decodedStartParam.includes('invite')) {
+                            isInvite = true
+                            
+                            // Извлекаем word и from из строки
+                            const wordMatch = decodedStartParam.match(/word=([^&]+)/)
+                            const fromMatch = decodedStartParam.match(/from=([^&]+)/)
+                            
+                            if (wordMatch) inviteWord = decodeURIComponent(wordMatch[1])
+                            if (fromMatch) fromUser = decodeURIComponent(fromMatch[1])
+                        }
                         
                         debugMessage = `start_param: ${decodedStartParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
                         console.log('start_param parsing result:', { isInvite, inviteWord, fromUser })
