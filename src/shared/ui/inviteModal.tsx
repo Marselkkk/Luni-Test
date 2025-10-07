@@ -50,7 +50,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
             
             const cleanWord = transliterate(inviteWord.trim()).replace(/[^a-zA-Z0-9]/g, '')
             const cleanName = transliterate(senderName).replace(/[^a-zA-Z0-9]/g, '')
-            const payload = `invite${cleanWord}${cleanName}`
+            const payload = `invite_${cleanWord}_${cleanName}`
             const inviteUrl = `https://t.me/test_task_luni_bot?startapp=${payload}`
 
             const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`

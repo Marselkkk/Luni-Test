@@ -74,15 +74,13 @@ export const Route = createFileRoute('/')({
                     try {
                         const decodedParam = decodeURIComponent(paramToCheck)
                         
-                        if (decodedParam.startsWith('invite')) {
+                        if (decodedParam.startsWith('invite_')) {
                             isInvite = true
                             
-                            const withoutInvite = decodedParam.substring(6)
-                            
-                            if (withoutInvite.length > 0) {
-                                const wordLength = Math.min(5, Math.max(3, withoutInvite.length / 2))
-                                inviteWord = withoutInvite.substring(0, wordLength)
-                                fromUser = withoutInvite.substring(wordLength) || 'User'
+                            const parts = decodedParam.split('_')
+                            if (parts.length >= 3) {
+                                inviteWord = parts[1]
+                                fromUser = parts.slice(2).join('_')
                             }
                         }
                         
