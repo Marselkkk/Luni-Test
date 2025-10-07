@@ -27,7 +27,14 @@ export const Route = createFileRoute('/')({
         ]
 
         useEffect(() => {
+            console.log('=== MOBILE DEBUG START ===')
+            console.log('Window location:', window.location.href)
+            console.log('User agent:', navigator.userAgent)
+            console.log('Telegram WebApp available:', !!window.Telegram?.WebApp)
+            
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                console.log('Full initDataUnsafe:', window.Telegram.WebApp.initDataUnsafe)
+                
                 const user = window.Telegram!.WebApp.initDataUnsafe?.user
                 if (user) {
                     const name = user.first_name && user.last_name 
@@ -42,25 +49,60 @@ export const Route = createFileRoute('/')({
                     setUserName('Пользователь')
                 }
                 
+                // Проверяем параметры из URL
                 const urlParams = new URLSearchParams(window.location.search)
                 const isInvite = urlParams.get('startapp') === 'invite'
                 const inviteWord = urlParams.get('word')
                 const fromUser = urlParams.get('from')
                 
+                console.log('URL params:', { isInvite, inviteWord, fromUser, search: window.location.search })
+                
+                // Также проверяем start_param из Telegram WebApp
+                const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param
+                console.log('Telegram start_param:', startParam)
+                
+                if (startParam) {
+                    try {
+                        const startParams = new URLSearchParams(startParam)
+                        const telegramInviteWord = startParams.get('word')
+                        const telegramFromUser = startParams.get('from')
+                        console.log('Telegram start params:', { telegramInviteWord, telegramFromUser })
+                        
+                        if (telegramInviteWord && telegramFromUser) {
+                            console.log('✅ Opening invite modal from Telegram start_param:', { telegramInviteWord, telegramFromUser })
+                            setDebugInfo(`✅ Telegram start_param: ${telegramInviteWord} от ${telegramFromUser}`)
+                            setInviteReceivedOpen(true)
+                            sessionStorage.setItem('inviteWord', telegramInviteWord)
+                            sessionStorage.setItem('fromUser', telegramFromUser)
+                        }
+                    } catch (e) {
+                        console.log('❌ Error parsing start_param:', e)
+                    }
+                }
+                
                 if (isInvite && inviteWord && fromUser) {
+                    console.log('✅ Opening invite modal with URL params:', { inviteWord, fromUser })
+                    setDebugInfo(`✅ URL params: ${inviteWord} от ${fromUser}`)
                     setInviteReceivedOpen(true)
                     sessionStorage.setItem('inviteWord', inviteWord)
                     sessionStorage.setItem('fromUser', fromUser)
+                } else {
+                    console.log('❌ Invite conditions not met:', { isInvite, inviteWord, fromUser })
+                    setDebugInfo(`❌ Нет приглашения. URL: ${window.location.search}, start_param: ${startParam}`)
                 }
             } else {
+                console.log('❌ Telegram WebApp not available')
                 setUserName('Тестовый Пользователь')
                 setUserAvatar('/images/stub.png')
             }
+            
+            console.log('=== MOBILE DEBUG END ===')
         }, [])
         
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
         const [inviteSuccessOpen, setInviteSuccessOpen] = useState(false)
         const [inviteDeclinedOpen, setInviteDeclinedOpen] = useState(false)
+        const [debugInfo, setDebugInfo] = useState('')
         
         const getInviteData = () => {
             const inviteWord = sessionStorage.getItem('inviteWord') || 'КРАСАВЕЛЛО'
@@ -92,6 +134,13 @@ export const Route = createFileRoute('/')({
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
                         <UserCard name={userName} avatar={userAvatar} />
                     </div>
+                    
+                    {/* Отладочная информация для мобильного тестирования */}
+                    {debugInfo && (
+                        <div className="mx-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+                            <p className="text-sm text-yellow-800 font-mono">{debugInfo}</p>
+                        </div>
+                    )}
 
                     <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
                         <div className="flex justify-between items-center px-4 py-1">

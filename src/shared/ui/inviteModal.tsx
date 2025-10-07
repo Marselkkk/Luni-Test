@@ -28,7 +28,8 @@ const InviteModal: React.FC<InviteModalProps> = ({
 
     const handleSelectContact = () => {
         if (inviteWord.trim()) {
-            let senderName = 'Пользователь2'
+            // Получаем имя текущего пользователя из Telegram
+            let senderName = 'Пользователь'
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 const user = window.Telegram.WebApp.initDataUnsafe?.user
                 if (user) {
@@ -38,8 +39,13 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 }
             }
             
-            const inviteUrl = `https://t.me/@test_task_luni_bot?startapp=invite&word=${encodeURIComponent(inviteWord.trim())}&from=${encodeURIComponent(senderName)}`
+            const inviteUrl = `https://t.me/luni_test_bot?startapp=invite&word=${encodeURIComponent(inviteWord.trim())}&from=${encodeURIComponent(senderName)}`
             const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`
+            
+            console.log('Generated invite URL:', inviteUrl)
+            console.log('Generated message:', message)
+            console.log('Sender name:', senderName)
+            console.log('Invite word:', inviteWord.trim())
             
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
                 window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(message)}`)
