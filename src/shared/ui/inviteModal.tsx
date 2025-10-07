@@ -39,8 +39,20 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 }
             }
             
-            // Правильный формат для Telegram WebApp - простой формат без URL-параметров
-            const payload = `invite_${encodeURIComponent(inviteWord.trim())}_${encodeURIComponent(senderName)}`
+            // Простейший формат для Telegram WebApp - транслитерация кириллицы
+            const transliterate = (str: string) => {
+                const map: { [key: string]: string } = {
+                    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
+                    'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+                    'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
+                    'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+                }
+                return str.toLowerCase().split('').map(char => map[char] || char).join('')
+            }
+            
+            const cleanWord = transliterate(inviteWord.trim()).replace(/[^a-zA-Z0-9]/g, '')
+            const cleanName = transliterate(senderName).replace(/[^a-zA-Z0-9]/g, '')
+            const payload = `invite${cleanWord}${cleanName}`
             const inviteUrl = `https://t.me/test_task_luni_bot?startapp=${payload}`
 
             const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`

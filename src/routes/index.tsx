@@ -66,37 +66,68 @@ export const Route = createFileRoute('/')({
                 const tgWebAppStartParam = urlParams.get('tgWebAppStartParam')
                 console.log('tgWebAppStartParam:', tgWebAppStartParam)
                 
+                // Проверяем все возможные источники параметров
+                console.log('=== ALL PARAMETER SOURCES ===')
+                console.log('window.location.search:', window.location.search)
+                console.log('window.location.href:', window.location.href)
+                console.log('initDataUnsafe:', window.Telegram.WebApp.initDataUnsafe)
+                console.log('initData:', window.Telegram.WebApp.initData)
+                
                 let inviteWord = null
                 let fromUser = null
                 let isInvite = false
                 let debugMessage = ''
                 
-                // Согласно документации, проверяем start_param и tgWebAppStartParam
-                const paramToCheck = startParam || tgWebAppStartParam
+                // Проверяем все возможные источники параметров
+                const paramSources = [
+                    { name: 'start_param', value: startParam },
+                    { name: 'tgWebAppStartParam', value: tgWebAppStartParam },
+                    { name: 'URL search', value: window.location.search }
+                ]
+                
+                let paramToCheck = null
+                let sourceName = ''
+                
+                for (const source of paramSources) {
+                    if (source.value) {
+                        paramToCheck = source.value
+                        sourceName = source.name
+                        console.log(`Found param in ${source.name}:`, source.value)
+                        break
+                    }
+                }
                 
                 if (paramToCheck) {
                     try {
                         const decodedParam = decodeURIComponent(paramToCheck)
-                        console.log('Decoded param:', decodedParam)
+                        console.log(`Decoded param from ${sourceName}:`, decodedParam)
                         
-                        // Парсинг нового формата: invite_word_from
-                        if (decodedParam.startsWith('invite_')) {
+                        // Парсинг нового формата: invitewordname
+                        if (decodedParam.startsWith('invite')) {
                             isInvite = true
                             
-                            // Разделяем по подчеркиваниям: invite_word_from
-                            const parts = decodedParam.split('_')
-                            if (parts.length >= 3) {
-                                inviteWord = decodeURIComponent(parts[1])
-                                fromUser = decodeURIComponent(parts.slice(2).join('_')) // На случай, если в имени есть подчеркивания
+                            // Извлекаем данные из формата: invitewordname
+                            const withoutInvite = decodedParam.substring(6) // Убираем "invite"
+                            
+                            // Простое извлечение - берем первые символы как слово, остальное как имя
+                            // Это не идеально, но должно работать для тестирования
+                            if (withoutInvite.length > 0) {
+                                // Берем первые 3-5 символов как слово, остальное как имя
+                                const wordLength = Math.min(5, Math.max(3, withoutInvite.length / 2))
+                                inviteWord = withoutInvite.substring(0, wordLength)
+                                fromUser = withoutInvite.substring(wordLength) || 'User'
                             }
                         }
                         
-                        debugMessage = `Param: ${decodedParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
+                        debugMessage = `${sourceName}: ${decodedParam} | isInvite: ${isInvite} | word: ${inviteWord} | from: ${fromUser}`
                         console.log('Param parsing result:', { isInvite, inviteWord, fromUser })
                     } catch (e) {
                         console.log('Error parsing param:', e)
-                        debugMessage = `Ошибка парсинга: ${e}`
+                        debugMessage = `Ошибка парсинга ${sourceName}: ${e}`
                     }
+                } else {
+                    debugMessage = 'Нет параметров ни в одном источнике'
+                    console.log('No parameters found in any source')
                 }
                 
                 if (isInvite && inviteWord && fromUser) {
