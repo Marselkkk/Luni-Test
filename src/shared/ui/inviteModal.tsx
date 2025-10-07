@@ -39,8 +39,9 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 }
             }
             
+            // Правильный формат для Telegram WebApp
             const payload = `invite&word=${encodeURIComponent(inviteWord.trim())}&from=${encodeURIComponent(senderName)}`
-            const inviteUrl = `https://t.me/test_task_luni_bot/app?startapp=${encodeURIComponent(payload)}`
+            const inviteUrl = `https://t.me/test_task_luni_bot?start=${encodeURIComponent(payload)}`
 
             const message = `Заходи ко мне в Луни. Новая тема для поиска друзей с помощью ИИ. Ты для меня - 🫢🫣🤫... Зайди и посмотри кто именно: ${inviteUrl}`
             
