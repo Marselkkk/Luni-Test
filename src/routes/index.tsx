@@ -10,7 +10,7 @@ export const Route = createFileRoute('/')({
         
         useEffect(() => {
             if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-                const user = window.Telegram.WebApp.initDataUnsafe?.user
+                const user = window.Telegram!.WebApp.initDataUnsafe?.user
                 if (user) {
                     const name = user.first_name && user.last_name 
                         ? `${user.first_name} ${user.last_name}`

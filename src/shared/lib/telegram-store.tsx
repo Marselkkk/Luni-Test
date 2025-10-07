@@ -49,7 +49,7 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
     const isInTelegram = typeof window !== 'undefined' && window.Telegram?.WebApp
     
     if (isInTelegram) {
-      const webApp = window.Telegram.WebApp
+      const webApp = window.Telegram!.WebApp
       
       // Инициализируем Web App
       webApp.ready()
