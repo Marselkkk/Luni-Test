@@ -20,7 +20,15 @@ const TelegramContext = createContext<{
 export const useTelegramStore = () => {
   const context = useContext(TelegramContext)
   if (!context) {
-    throw new Error('useTelegramStore must be used within TelegramProvider')
+    // Возвращаем дефолтные значения вместо ошибки
+    return {
+      state: {
+        webApp: null,
+        isReady: false,
+        user: null,
+      },
+      setState: () => {},
+    }
   }
   return context
 }
@@ -37,8 +45,10 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
   }
 
   useEffect(() => {
-    // Инициализация Telegram Web App
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+    // Проверяем, запущено ли приложение в Telegram
+    const isInTelegram = typeof window !== 'undefined' && window.Telegram?.WebApp
+    
+    if (isInTelegram) {
       const webApp = window.Telegram.WebApp
       
       // Инициализируем Web App
@@ -54,7 +64,7 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
         user: user || null,
       })
     } else {
-      // Для разработки - создаем тестового пользователя
+      // Для разработки и работы вне Telegram - создаем тестового пользователя
       updateState({
         webApp: null,
         isReady: true,

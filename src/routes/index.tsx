@@ -1,15 +1,29 @@
 import { UserCard, Tag, ContactCard, InviteButton, TabBar, LuniBar, InviteReceivedModal, InviteSuccessModal, InviteDeclinedModal } from '../shared/ui'
 import { createFileRoute } from '@tanstack/react-router'
-import { useTelegramUser } from '../shared/lib'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export const Route = createFileRoute('/')({
     component: () => {
         const [activeFilter, setActiveFilter] = useState<string>('Все')
-        const { getUserDisplayName, isReady } = useTelegramUser()
+        const [userName, setUserName] = useState('Загрузка...')
         
-        // Состояния для модалок
+        useEffect(() => {
+            if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                const user = window.Telegram.WebApp.initDataUnsafe?.user
+                if (user) {
+                    const name = user.first_name && user.last_name 
+                        ? `${user.first_name} ${user.last_name}`
+                        : user.first_name || `@${user.username}` || 'Пользователь'
+                    setUserName(name)
+                } else {
+                    setUserName('Пользователь')
+                }
+            } else {
+                setUserName('Тестовый Пользователь')
+            }
+        }, [])
+        
         const [inviteReceivedOpen, setInviteReceivedOpen] = useState(false)
         const [inviteSuccessOpen, setInviteSuccessOpen] = useState(false)
         const [inviteDeclinedOpen, setInviteDeclinedOpen] = useState(false)
@@ -38,7 +52,7 @@ export const Route = createFileRoute('/')({
                 <div className="flex flex-col gap-[18px]">
                     <div className="px-4 flex items-center justify-between">
                         <span className="text-[40px] leading-[52px] font-extrabold">Чаты</span>
-                        <UserCard name={isReady ? getUserDisplayName() : 'Загрузка...'} />
+                        <UserCard name={userName} />
                     </div>
 
                     <div className="bg-white" style={{ height: 'calc(100dvh - 70px)' }}>
@@ -46,7 +60,7 @@ export const Route = createFileRoute('/')({
                             <div className="flex items-center gap-2">
                                 <div className='h-6 aspect-square'>
                                     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M15 15.5L21 21.5M10 17.5C6.13401 17.5 3 14.366 3 10.5C3 6.63401 6.13401 3.5 10 3.5C13.866 3.5 17 6.63401 17 10.5C17 14.366 13.866 17.5 10 17.5Z" stroke="#5D6479" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M15 15.5L21 21.5M10 17.5C6.13401 17.5 3 14.366 3 10.5C3 6.63401 6.13401 3.5 10 3.5C13.866 3.5 17 6.63401 17 10.5C17 14.366 13.866 17.5 10 17.5Z" stroke="#5D6479" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                     </svg>
                                 </div>
                                 <Tag 
